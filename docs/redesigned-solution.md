@@ -4,7 +4,7 @@
 
 `smart-code` 不是简单复制旧工程，而是在旧工程工作流经验基础上重构为平台化低代码 SaaS：
 
-- 主平台采用 JDK 21 + Spring Boot 3。
+- 主平台采用 JDK 21 + Spring Boot 4.1。
 - 前端采用 Vue3 + Vite + TypeScript + Naive UI。
 - 工作流采用外置 Camunda 7 工作流服务。
 - BPMN 设计器参考 `vite-vue-bpmn-process-dev`，改造成平台内流程设计器。
@@ -29,14 +29,11 @@ code
     smart-common           公共能力
 
   camunda
-    backend
-      engine-app           Camunda 7 外置服务启动模块
-      engine-api           对 api 暴露的接口 DTO
-      engine-core          Camunda 7 二次开发
-      engine-listener      FlowListener、TaskListener
-      engine-adapter       Camunda 操作封装
-    web
-      bpmn-designer        BPMN 设计器源码和流程配置组件
+    engine-app             Camunda 7 外置服务启动模块
+    engine-api             对 api 暴露的接口 DTO
+    engine-core            Camunda 7 二次开发
+    engine-listener        FlowListener、TaskListener
+    engine-adapter         Camunda 操作封装
 
   web
     src
@@ -51,7 +48,7 @@ code
         bpmn-designer
 ```
 
-前端只保留一个用户入口：`code/web`。`code/camunda/web` 不作为第二套后台独立部署，定位是流程设计器和流程配置组件的源码目录，成熟后集成到主平台 `web` 的路由、菜单和权限体系中。
+前端只保留一个用户入口：`code/web`。`code/web` 不作为第二套后台独立部署，定位是流程设计器和流程配置组件的源码目录，成熟后集成到主平台 `web` 的路由、菜单和权限体系中。
 
 ## 3. 模块职责
 
@@ -70,7 +67,7 @@ code
 
 ### 3.2 camunda
 
-`camunda/backend` 负责 Camunda 运行态：
+`camunda` 负责 Camunda 运行态：
 
 - 流程部署。
 - 流程实例启动。
@@ -82,7 +79,7 @@ code
 - Camunda 监听器。
 - Camunda 历史查询。
 
-`camunda/web` 负责流程设计器组件沉淀：
+`web` 负责流程设计器组件沉淀：
 
 - BPMN 设计器。
 - 节点属性面板。
@@ -272,7 +269,7 @@ BPMN 设计器保存 XML
 后端主平台：
 
 - JDK 21
-- Spring Boot 3
+- Spring Boot 4.1
 - Spring Security
 - MyBatis-Plus
 - MySQL 8

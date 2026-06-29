@@ -34,7 +34,7 @@
 
 - 创建主平台后端 `api`：
   - JDK 21。
-  - Spring Boot 3。
+  - Spring Boot 4.1。
   - MyBatis-Plus 或 MyBatis。
   - MySQL 8。
   - Redis。
@@ -46,15 +46,15 @@
   - Naive UI。
   - Pinia。
   - Vue Router。
-- 创建外置工作流后端 `camunda/backend`：
+- 创建外置工作流后端 `camunda`：
   - Spring Boot 2.7。
   - Camunda 7.19+。
   - 独立数据库或独立 schema。
   - 对主平台暴露 HTTP API。
-- 创建流程设计器组件目录 `camunda/web`：
-  - 放置 BPMN 设计器和流程配置组件源码。
-  - 不作为独立用户后台。
-  - 后续集成到主平台 `web`。
+- 明确流程设计器集成边界：
+  - BPMN 设计器和流程配置页面直接放在主平台 `web`。
+  - 不创建第二套前端入口。
+  - 所有流程页面复用主平台路由、菜单和权限。
 - 统一代码规范：
   - 后端统一异常结构。
   - 后端统一返回结构。
@@ -65,14 +65,14 @@
 
 - `api` 能启动并连接 MySQL、Redis。
 - `web` 能启动，展示 Naive UI 主布局，并作为唯一前端入口。
-- `camunda/backend` 能启动，Camunda 表自动初始化或脚本初始化成功。
-- `camunda/web` 目录存在，明确为流程设计器组件源码目录。
+- `camunda` 能启动，Camunda 表自动初始化或脚本初始化成功。
+- 流程设计器集成边界明确：页面归属 `web`，引擎能力归属 `camunda`。
 - 三个工程都能读取本地配置和开发环境配置。
 - 形成第一版 `README.md` 启动说明。
 
 ### 3.3 阶段风险
 
-- 主平台 Spring Boot 3 与 Camunda 7 不兼容，所以 Camunda 必须外置。
+- 主平台 Spring Boot 4.1 与 Camunda 7 不兼容，所以 Camunda 必须外置。
 - 不要在第一阶段就迁移旧审批逻辑，先把工程边界搭稳。
 
 ## 4. 阶段 1：基础平台
@@ -207,7 +207,7 @@
   - 使用 Naive UI 弹窗、表格、表单。
   - 保留 `camunda:smartProperty` 扩展思路。
   - 支持流程保存、预览、发布。
-  - 组件源码放在 `camunda/web`，运行入口集成到主平台 `web`。
+  - 流程设计器页面直接放在主平台 `web`。
 - 节点扩展属性：
   - 按钮配置 `buttonsSetting`。
   - 表单字段权限 `formEditable`。
@@ -228,7 +228,7 @@
 
 ### 7.3 阶段风险
 
-- 设计器不要直接调用 Camunda，统一提交到主平台，由主平台转发给 `camunda/backend`。
+- 设计器不要直接调用 Camunda，统一提交到主平台，由主平台转发给 `camunda`。
 - 不做第二套流程管理前端，流程页面统一挂在主平台菜单下。
 - BPMN 扩展属性要有版本兼容策略，避免后续字段改名导致旧流程无法解析。
 
@@ -517,8 +517,8 @@ stage-03-camunda.md
 
 1. 创建 `api` 后端工程骨架。
 2. 创建 `web` 前端工程骨架，接入 Naive UI。
-3. 创建 `camunda/backend` 外置 Camunda 7 工程骨架。
-4. 创建 `camunda/web` 流程设计器组件目录。
+3. 创建 `camunda` 外置 Camunda 7 工程骨架。
+4. 明确流程设计器后续直接集成到 `web`。
 5. 编写基础数据库初始化脚本。
 6. 编写本地启动说明。
 

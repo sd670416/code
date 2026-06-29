@@ -4,7 +4,7 @@
 
 建设一个面向多租户的低代码平台，支持租户下创建多个应用。每个应用具备独立的菜单、角色、权限、表单模型、业务数据和工作流配置。平台通过拖拽方式完成表单设计、菜单配置、权限划分和流程编排，最终形成可运行的业务系统。
 
-本方案已结合旧项目 `F:\project\smart`、`F:\project\gongcheng` 和 `F:\project\vite-vue-bpmn-process-dev` 重新设计。新版采用 `F:\project\smart` 作为基础框架参考，主平台使用 JDK 21 / Spring Boot 3，工作流采用外置 Camunda 7 服务承接二次开发能力。完整重设计说明见 `docs/redesigned-solution.md`，Camunda 二次开发细节见 `docs/camunda-extension-design.md`，最终设计汇总见 `docs/final-design-summary.md`，开发规范见 `docs/development-standards.md`。
+本方案已结合旧项目 `F:\project\smart`、`F:\project\gongcheng` 和 `F:\project\vite-vue-bpmn-process-dev` 重新设计。新版采用 `F:\project\smart` 作为基础框架参考，主平台使用 JDK 21 / Spring Boot 4.1，工作流采用外置 Camunda 7 服务承接二次开发能力。完整重设计说明见 `docs/redesigned-solution.md`，Camunda 二次开发细节见 `docs/camunda-extension-design.md`，最终设计汇总见 `docs/final-design-summary.md`，开发规范见 `docs/development-standards.md`。
 
 核心能力：
 
@@ -20,7 +20,7 @@
 后端：
 
 - JDK 21
-- Spring Boot 3
+- Spring Boot 4.1
 - Spring Security
 - MyBatis-Plus 或 Spring Data JDBC
 - MySQL 8
@@ -42,7 +42,7 @@
 
 - 用户只进入一套主平台前端 `code/web`。
 - 平台管理、应用管理、表单运行、流程设计、任务中心都在同一个登录态、同一套路由和同一套菜单权限中。
-- `code/camunda/web` 只作为 BPMN 设计器和流程配置组件源码目录，不作为独立业务后台给用户访问。
+- BPMN 设计器和流程配置页面直接集成在 `code/web`，不再创建 Camunda 侧前端目录。
 
 推荐工作流集成方式：
 
@@ -60,7 +60,7 @@ web/vue3 + naive ui
   |
   | REST API / WebSocket
   v
-api/springboot3
+api/springboot4.1
   |
   |-- IAM 权限模块
   |-- 租户与应用模块
@@ -75,19 +75,13 @@ api/springboot3
   |-- Redis
   |
   v
-camunda/backend/springboot2 + camunda7
+camunda/springboot2 + camunda7
   |
   |-- Camunda Engine
   |-- Camunda MySQL
-
-camunda/web
-  |
-  |-- BPMN 设计器源码
-  |-- 流程节点属性组件
-  |-- 被主平台 web 集成使用
 ```
 
-主平台后端采用模块化单体优先。工作流引擎单独拆出，是为了兼容 Camunda 7 与 Spring Boot 3/JDK 21 的版本边界，同时保留旧系统已验证的审批动作能力。
+主平台后端采用模块化单体优先。工作流引擎单独拆出，是为了兼容 Camunda 7 与 Spring Boot 4.1/JDK 21 的版本边界，同时保留旧系统已验证的审批动作能力。
 
 ## 4. 后端分层设计
 
@@ -345,7 +339,7 @@ Redis 存储：
 
 ## 13. 关键技术风险
 
-- 主平台不直接集成 Camunda 7，避免 Spring Boot 3/JDK 21 兼容性风险。
+- 主平台不直接集成 Camunda 7，避免 Spring Boot 4.1/JDK 21 兼容性风险。
 - Camunda 7 外置服务需要验证与 MySQL 8、部署环境、回调机制的稳定性。
 - 通用 JSON 数据模型查询灵活但性能有限，需要字段索引表补强。
 - 数据权限容易散落在业务代码中，必须抽象统一查询拦截。

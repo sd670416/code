@@ -70,10 +70,10 @@ smart-tools        工具能力
 
 需要改造的点：
 
-- 新平台主后端要求 JDK 21 + Spring Boot 3，不能直接照搬 Java 8 / Spring Boot 2.7 的工程。
-- Spring Security OAuth2 老版本不适合直接迁移到 Spring Boot 3，建议改为 Sa-Token 或 Spring Security 6 + JWT。
+- 新平台主后端要求 JDK 21 + Spring Boot 4.1，不能直接照搬 Java 8 / Spring Boot 2.7 的工程。
+- Spring Security OAuth2 老版本不适合直接迁移到 Spring Boot 4.1，建议改为 Sa-Token 或 Spring Security 新版本 + JWT。
 - 原框架角色菜单偏平台后台，需要扩展为“平台级权限 + 应用级权限”两层。
-- 原工作流 `smart-flow` 仍是内嵌 Camunda，新平台应拆到 `code/camunda/backend` 外置服务。
+- 原工作流 `smart-flow` 仍是内嵌 Camunda，新平台应拆到 `code/camunda` 外置服务。
 - 原接口返回多为字符串 JSON，新平台建议统一为强类型 DTO。
 
 ### 2.2 前端 `smart-web2`
@@ -128,13 +128,13 @@ F:\project\smart\smart-web2
 - 新版 `code/web` 可以直接参考 `smart-web2` 的项目结构。
 - Naive UI 组件封装、表格页、搜索表单、弹窗、抽屉可以复用设计模式。
 - 动态路由、后端菜单、权限按钮模式可作为基础。
-- BPMN 设计器依赖和组件目录可迁移到 `code/camunda/web`，再集成到 `code/web`。
+- BPMN 设计器依赖和组件目录可迁移到 `code/web`，再集成到 `code/web`。
 - `views/flow` 可作为流程管理页面的第一版参考。
 
 需要改造的点：
 
 - 前端最终只保留一个用户入口：`code/web`。
-- `code/camunda/web` 不独立部署，只沉淀流程设计器组件。
+- `code/web` 不独立部署，只沉淀流程设计器组件。
 - 菜单要区分平台菜单和应用菜单。
 - 表单页面要支持无流程、有流程两种运行模式。
 - 原流程页面更多围绕 Camunda 流程定义，新平台还要围绕低代码应用、表单、数据记录、流程绑定。
@@ -158,12 +158,8 @@ code
     平台管理、应用管理、表单运行、流程设计、任务中心全部在这里访问
 
   camunda
-    backend
-      外置 Camunda 7 服务
-      流程部署、实例启动、审批动作、监听器、候选人解析
-    web
-      BPMN 设计器和流程配置组件源码
-      不作为独立后台部署
+    外置 Camunda 7 服务
+    流程部署、实例启动、审批动作、监听器、候选人解析
 ```
 
 ## 4. 前端是否拆分的最终结论
@@ -184,7 +180,7 @@ code/web
 - 表单、流程、任务中心需要共享同一业务上下文。
 - 避免流程设计、任务中心、应用表单之间来回跳转到不同系统。
 
-`code/camunda/web` 的定位：
+`code/web` 的定位：
 
 - 存放 BPMN 设计器源码。
 - 存放节点属性面板。
@@ -241,7 +237,7 @@ code/web
 发起流程
   -> 保存业务数据
   -> 创建 flow_instance
-  -> 调用 camunda/backend 启动流程
+  -> 调用 camunda 启动流程
   -> 同步 flow_task_snapshot
   -> record_status = PROCESSING
   -> flow_status = PROCESSING
@@ -290,11 +286,11 @@ code/web
 部署方式：
 
 ```text
-api: JDK 21 + Spring Boot 3
-camunda/backend: Spring Boot 2.7 + Camunda 7.19+
+api: JDK 21 + Spring Boot 4.1
+camunda: Spring Boot 2.7 + Camunda 7.19+
 ```
 
-这样可以规避 Spring Boot 3 与 Camunda 7 starter 的兼容风险。
+这样可以规避 Spring Boot 4.1 与 Camunda 7 starter 的兼容风险。
 
 ## 8. 旧工作流代码采用策略
 

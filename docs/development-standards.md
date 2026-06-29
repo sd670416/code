@@ -14,6 +14,7 @@
 - VO、BO、DTO、Entity、Query 等模型职责明确。
 - 文件结构稳定，按模块聚合，便于维护。
 - 前端 Vue 代码同样遵守分层、封装、简练原则。
+- 全局变量、跨模块常量必须集中定义在常量类或枚举类中，减少散落在普通类中的静态属性。
 
 ## 2. 后端分层规范
 
@@ -91,8 +92,8 @@ smart-common
 - Controller 只能调用本模块 Application/Service。
 - 跨模块调用优先通过 Application Service，不直接访问对方 Mapper。
 - `smart-common` 不依赖业务模块。
-- `smart-workflow` 不直接操作 Camunda 引擎，只通过 `smart-integration` 调用 `camunda/backend`。
-- `camunda/backend` 不直接操作低代码业务表。
+- `smart-workflow` 不直接操作 Camunda 引擎，只通过 `smart-integration` 调用 `camunda`。
+- `camunda` 不直接操作低代码业务表。
 
 ## 4. 模型命名规范
 
@@ -268,12 +269,12 @@ Mapper/Repository 要求：
 
 ## 10. 工作流代码规范
 
-`smart-workflow` 和 `camunda/backend` 必须分工清晰：
+`smart-workflow` 和 `camunda` 必须分工清晰：
 
 | 模块 | 职责 |
 | --- | --- |
 | `smart-workflow` | 业务流程编排、权限校验、表单绑定、任务快照、审批日志 |
-| `camunda/backend` | Camunda 部署、启动、完成、退回、拿回、转办、监听器 |
+| `camunda` | Camunda 部署、启动、完成、退回、拿回、转办、监听器 |
 
 审批动作规范：
 
@@ -331,21 +332,19 @@ src
     workflow          流程管理和任务中心
 ```
 
-`code/camunda/web`：
+流程设计器相关前端代码放在 `code/web/src`：
 
 ```text
-camunda/web
-  bpmn-designer       BPMN 设计器组件
-  node-panel          节点属性面板
-  candidate-panel     候选人配置
-  button-panel        审批按钮配置
-  form-permission     字段权限配置
+views/workflow        流程管理和任务中心页面
+components/workflow   BPMN 设计器、节点属性、候选人、审批按钮、字段权限组件
+api/workflow          流程相关接口
+types/workflow        流程相关类型
 ```
 
 说明：
 
-- `camunda/web` 不作为独立后台。
-- 组件成熟后集成到 `code/web`。
+- `web` 是唯一前端入口。
+- 流程设计器不再放到 `code/camunda`。
 - 业务用户只访问 `code/web`。
 
 ## 12. Vue 代码规范
@@ -459,14 +458,70 @@ src/api/workflow/definition.ts
 - 类型文件：`xxx.d.ts` 或 `xxx.ts`。
 - Store：`useXxxStore`。
 
+常量和枚举：
+
+- 跨模块复用的字符串、数字、请求头、缓存 Key、权限码、流程动作编码，统一放入 `constants` 包下的常量类或枚举类。
+- 有固定业务取值范围的字段优先使用枚举，例如流程状态、审批动作、表单模式。
+- 普通业务类中避免定义可复用的 `public static final` 字段。
+- 禁止使用静态内部类堆叠常量，按业务域拆分为独立常量类或枚举。
+- 工具类内部必要的私有静态状态允许保留，但不能作为跨模块全局变量对外暴露。
+
 ## 17. 注释规范
 
 要求：
 
-- 公共类、复杂业务方法、关键状态机需要注释。
-- 简单 getter/setter 不写无意义注释。
-- 注释说明“为什么这样做”，不要重复“代码做了什么”。
-- 高风险流程逻辑必须标明适用范围，例如退回是否支持并行网关、多实例。
+- 后端所有公共类、Controller、Service、Repository、DTO、VO、BO、Entity、枚举必须写类注释。
+- 类注释必须说明类的用途和创建时间，格式建议使用 `@since 2026-06-29`。
+- 重要字段必须写字段注释，说明业务含义、取值范围、是否允许为空。
+- 公共方法、接口方法、核心业务方法必须写方法注释，包含入参、返回结果和可能抛出的异常。
+- Controller 方法注释必须说明接口用途、请求参数、返回数据和主要业务异常。
+- Service 方法注释必须说明事务边界、幂等要求、权限要求和异常场景。
+- 工作流审批动作必须标明适用范围，例如是否支持并行网关、多实例、子流程。
+- 前端 TypeScript 接口、API 方法、核心 composable、页面关键状态必须写注释。
+- Vue 页面必须对关键状态、核心事件、异步加载逻辑写注释。
+- CSS 中影响整体布局、主题或响应式行为的样式块必须写注释。
+- 简单 getter/setter、明显的模板文本不写无意义注释。
+- 注释优先说明业务意图、边界和风险，不机械复述代码。
+
+后端类注释示例：
+
+```java
+/**
+ * 表单定义应用服务，负责编排表单草稿、发布和版本切换。
+ *
+ * @since 2026-06-29
+ */
+public class FormDefinitionAppService {
+}
+```
+
+后端方法注释示例：
+
+```java
+/**
+ * 保存表单草稿。
+ *
+ * @param command 表单保存命令，必须包含租户、应用和表单 Schema
+ * @return 保存后的表单详情
+ * @throws BusinessException 当表单编码重复或无应用权限时抛出
+ */
+public FormDetailVO saveDraft(FormSaveCommand command) {
+}
+```
+
+前端注释示例：
+
+```ts
+/**
+ * 查询当前登录用户可见的应用菜单。
+ *
+ * @param appId 应用 ID
+ * @returns 应用菜单树
+ * @throws Error 当后端返回非成功错误码时抛出
+ */
+export function getAppMenus(appId: string): Promise<AppMenuVO[]> {
+}
+```
 
 ## 18. 测试规范
 

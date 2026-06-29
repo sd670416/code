@@ -10,13 +10,12 @@
 
 旧系统采用 Camunda 7.19，`smart-flow` 模块直接集成 Camunda Engine，并实现了流程定义、流程设计、流程监控、任务中心、我的流程、发起流程、业务类型绑定、审批记录、候选人解析、节点按钮配置和多种审批动作。
 
-新平台要求 JDK 21、Spring Boot 3，同时要求 Camunda 外置。结合旧系统能力，建议采用：
+新平台要求 JDK 21、Spring Boot 4.1，同时要求 Camunda 外置。结合旧系统能力，建议采用：
 
 ```text
-smart-code/api               JDK 21 + Spring Boot 3，低代码平台主服务
-smart-code/camunda/backend   外置 Camunda 7 工作流服务，承接流程引擎和二次开发
-smart-code/camunda/web       BPMN 设计器和流程配置组件源码
-smart-code/web               Vue3 + Vite + TypeScript + Naive UI，统一前端入口
+smart-code/api               JDK 21 + Spring Boot 4.1，低代码平台主服务
+smart-code/camunda           外置 Camunda 7 工作流服务，承接流程引擎和二次开发
+smart-code/web               Vue3 + Vite + TypeScript + Naive UI，统一前端入口，承载 BPMN 设计器和流程配置页面
 ```
 
 不建议第一版直接采用 Camunda 8 / Zeebe。原因是旧系统必须保留的 `reject`、`rejectFirst`、`rejectCustom`、`getBack`、复杂多实例退回等能力，强依赖 Camunda 7 的 `ProcessInstanceModificationBuilder`、历史任务、活动实例和运行时执行树。Camunda 8 的流程实例修改语义不同，迁移成本和行为风险都更高。
@@ -37,7 +36,7 @@ smart-web
 ```text
 web
   -> api 主平台
-       -> camunda/backend 外置工作流服务
+       -> camunda 外置工作流服务
             -> Camunda 7 Engine
        -> form/data/app/iam 模块
 ```
@@ -46,14 +45,13 @@ web
 
 | 模块 | 职责 |
 | --- | --- |
-| `web` | 统一前端入口，承载平台管理、应用管理、表单运行、流程设计、任务中心 |
+| `web` | 统一前端入口，承载平台管理、应用管理、表单运行、流程设计、节点属性、按钮配置、字段权限、候选人配置和任务中心 |
 | `api` | 应用、表单、业务数据、权限、租户隔离、流程业务编排 |
-| `camunda/backend` | Camunda 部署、实例运行、任务推进、退回拿回、候选人解析、流程历史 |
-| `camunda/web` | BPMN 设计器、节点属性、按钮配置、字段权限、候选人配置组件源码 |
+| `camunda` | Camunda 部署、实例运行、任务推进、退回拿回、候选人解析、流程历史 |
 | MySQL 平台库 | 低代码平台元数据、业务数据、工作流扩展表 |
 | Camunda 库 | Camunda 7 原生运行时表、历史表 |
 
-前端不拆成两套后台。`camunda/web` 的页面和组件最终通过主平台 `web` 的路由、菜单、权限加载，用户只登录一个系统。
+前端不拆成两套后台。`web` 的页面和组件最终通过主平台 `web` 的路由、菜单、权限加载，用户只登录一个系统。
 
 ## 3. 服务拆分方案
 
@@ -62,7 +60,7 @@ web
 技术栈：
 
 - JDK 21
-- Spring Boot 3
+- Spring Boot 4.1
 - Spring Security
 - MyBatis-Plus
 - MySQL 8
@@ -77,7 +75,7 @@ web
 - `workflow`：流程定义元数据、表单流程绑定、流程发起、审批动作编排、任务快照、审批记录。
 - `integration`：调用 `camunda` 的客户端。
 
-### 3.2 camunda/backend 外置工作流服务
+### 3.2 camunda 外置工作流服务
 
 技术栈建议：
 
@@ -89,9 +87,9 @@ web
 
 说明：
 
-- `api` 保持 JDK 21 / Spring Boot 3，不直接依赖 Camunda 7 starter，规避兼容性问题。
-- `camunda/backend` 单独维护 Camunda 7 运行时和二次开发能力，对 `api` 暴露 HTTP API。
-- 如果后续确认 Camunda 7 与 Spring Boot 3 的组合可稳定运行，也可以合并，但第一版不建议冒这个险。
+- `api` 保持 JDK 21 / Spring Boot 4.1，不直接依赖 Camunda 7 starter，规避兼容性问题。
+- `camunda` 单独维护 Camunda 7 运行时和二次开发能力，对 `api` 暴露 HTTP API。
+- 如果后续确认 Camunda 7 与 Spring Boot 4.1 的组合可稳定运行，也可以合并，但第一版不建议冒这个险。
 
 ## 4. 保留旧系统能力
 
@@ -527,7 +525,7 @@ Camunda 原生库保存引擎运行数据。
 
 ## 15. 关键风险
 
-- Camunda 7 与 Spring Boot 3 不直接放在同一服务，避免兼容性问题。
+- Camunda 7 与 Spring Boot 4.1 不直接放在同一服务，避免兼容性问题。
 - 退回、拿回在并行网关、多实例、子流程中复杂度高，必须做规则限制。
 - 旧系统中部分流程变量使用 `form_字段` 扁平化，新平台要标准化变量映射。
 - 旧系统 `eventSetting` 脚本不能原样开放执行，必须白名单化。
