@@ -1,0 +1,31 @@
+我想设计一个低代码平台集成工作流引擎，通过拖拉拽实现表单设计和工作流的配置，要做一个平台化的saas系统， 可以创建应用，实现每个应用的数据隔离，独立的菜单配置，和权限划分，要求支持数据权限，菜单权限，操作权限的配置。账号支持多角色。
+
+
+
+工程目录
+/api java代码
+/web vue代码 
+
+技术栈要求
+
+java:
+	jdk 21 
+	springboot 3+
+	mysql 8
+	redis
+
+mysql:
+     IP端口：http://127.0.0.1:3306
+     数据库：smart-code
+     账号：root
+     密码：root	
+
+flow:	
+	camunda
+
+vue:
+	vue3
+	vite
+	typescript
+	Naive UI
+
