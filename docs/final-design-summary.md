@@ -373,3 +373,27 @@ camunda/backend: Spring Boot 2.7 + Camunda 7.19+
 - Camunda 外置。
 - 审批动作逐步开放。
 - 每阶段验收后再进入下一阶段。
+
+## 11. 开发规范要求
+
+详细规范见：
+
+```text
+code/docs/development-standards.md
+```
+
+核心要求：
+
+- 代码风格简练，优先使用公共封装。
+- Controller 保持薄层，不写复杂业务逻辑。
+- 接口层、应用层、领域层、持久层职责明确。
+- 后端统一返回结构 `ApiResult<T>`。
+- 错误码按认证、权限、租户、参数、业务、表单、工作流、Camunda、系统异常分类。
+- DTO、Query、VO、BO、Entity、Command、Event 分工明确。
+- Controller 入参不直接使用 Entity，返回不直接暴露 Entity。
+- Service 方法表达明确业务动作，复杂审批动作拆为 `ActionHandler`。
+- Mapper 只负责持久化，不写业务规则和权限逻辑。
+- 前端统一从 `api` 层调用接口，页面不直接使用 axios。
+- Vue 页面保持轻量，复杂逻辑放入 composables，通用能力封装为组件。
+- 前端类型要清晰，避免默认使用 `any`。
+- 文件结构按模块聚合，长期可维护优先。

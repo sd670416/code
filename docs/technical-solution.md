@@ -4,7 +4,7 @@
 
 建设一个面向多租户的低代码平台，支持租户下创建多个应用。每个应用具备独立的菜单、角色、权限、表单模型、业务数据和工作流配置。平台通过拖拽方式完成表单设计、菜单配置、权限划分和流程编排，最终形成可运行的业务系统。
 
-本方案已结合旧项目 `F:\project\smart`、`F:\project\gongcheng` 和 `F:\project\vite-vue-bpmn-process-dev` 重新设计。新版采用 `F:\project\smart` 作为基础框架参考，主平台使用 JDK 21 / Spring Boot 3，工作流采用外置 Camunda 7 服务承接二次开发能力。完整重设计说明见 `docs/redesigned-solution.md`，Camunda 二次开发细节见 `docs/camunda-extension-design.md`，最终设计汇总见 `docs/final-design-summary.md`。
+本方案已结合旧项目 `F:\project\smart`、`F:\project\gongcheng` 和 `F:\project\vite-vue-bpmn-process-dev` 重新设计。新版采用 `F:\project\smart` 作为基础框架参考，主平台使用 JDK 21 / Spring Boot 3，工作流采用外置 Camunda 7 服务承接二次开发能力。完整重设计说明见 `docs/redesigned-solution.md`，Camunda 二次开发细节见 `docs/camunda-extension-design.md`，最终设计汇总见 `docs/final-design-summary.md`，开发规范见 `docs/development-standards.md`。
 
 核心能力：
 
