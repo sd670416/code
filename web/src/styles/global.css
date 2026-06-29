@@ -1,0 +1,48 @@
+/* 根节点撑满视口，保证 Naive UI 布局可以按整屏高度计算。 */
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+/* 全局字体和背景色，后续主题切换会从这里迁移到 Naive UI theme overrides。 */
+body {
+  font-family:
+    Inter,
+    "PingFang SC",
+    "Microsoft YaHei",
+    sans-serif;
+  background: #f5f7fb;
+}
+
+/* 主应用外壳需要至少占满一屏，避免内容不足时侧边栏断开。 */
+.app-shell {
+  min-height: 100vh;
+}
+
+/* 左侧品牌区域，固定高度用于和顶部 Header 对齐。 */
+.brand {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* 顶部标题栏，后续会承载租户、应用切换和用户菜单。 */
+.app-header {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  font-weight: 600;
+  background: #fff;
+}
+
+/* 主内容区域统一留白，具体页面内部再控制栅格和表格密度。 */
+.app-content {
+  padding: 20px;
+}

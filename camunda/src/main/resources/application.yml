@@ -1,0 +1,25 @@
+server:
+  port: 18081
+
+spring:
+  application:
+    name: camunda-backend
+  datasource:
+    url: jdbc:h2:mem:camunda;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+camunda:
+  bpm:
+    admin-user:
+      id: admin
+      password: admin
+      first-name: Admin
+    database:
+      schema-update: true
+    history-level: full
+
+logging:
+  level:
+    root: info

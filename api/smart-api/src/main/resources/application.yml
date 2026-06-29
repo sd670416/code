@@ -1,0 +1,10 @@
+server:
+  port: 18080
+
+spring:
+  application:
+    name: smart-api
+
+logging:
+  level:
+    root: info
