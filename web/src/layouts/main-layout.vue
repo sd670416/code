@@ -4,6 +4,9 @@ import type { Component } from 'vue';
 import { NIcon } from 'naive-ui';
 import type { MenuOption } from 'naive-ui';
 import { GitBranch, LayoutDashboard, Settings, TableProperties } from 'lucide-vue-next';
+import { useThemeScheme } from '@/theme/use-theme-scheme';
+
+const { activeThemeKey, themeOptions } = useThemeScheme();
 
 /**
  * 将 lucide 图标包装为 Naive UI 菜单可识别的渲染函数。
@@ -38,6 +41,13 @@ const menuOptions: MenuOption[] = [
     <NLayout>
       <NLayoutHeader bordered class="app-header">
         <span>低代码 SaaS 工作流平台</span>
+        <NSelect
+          v-model:value="activeThemeKey"
+          class="theme-select"
+          size="small"
+          :options="themeOptions"
+          aria-label="后台主题方案"
+        />
       </NLayoutHeader>
       <NLayoutContent class="app-content">
         <RouterView />

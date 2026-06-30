@@ -17,9 +17,42 @@ body {
   background: #f5f7fb;
 }
 
+/* 科技感后台主题变量：深海蓝方案，适合默认管理后台。 */
+:root[data-theme="deep-blue"] {
+  --shell-bg: #edf3ff;
+  --sider-bg: #0b1635;
+  --sider-border: rgba(147, 197, 253, 0.18);
+  --brand-text: #eef6ff;
+  --brand-accent: #60a5fa;
+  --header-bg: rgba(255, 255, 255, 0.86);
+  --content-bg:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.08), transparent 34%),
+    #f5f8ff;
+}
+
+/* 科技感后台主题变量：赛博青方案，适合流程设计和监控类页面。 */
+:root[data-theme="cyber-cyan"] {
+  --shell-bg: #eafcff;
+  --sider-bg: #06262f;
+  --sider-border: rgba(103, 232, 249, 0.2);
+  --brand-text: #ecfeff;
+  --brand-accent: #22d3ee;
+  --header-bg: rgba(247, 254, 255, 0.88);
+  --content-bg:
+    linear-gradient(135deg, rgba(8, 145, 178, 0.1), transparent 36%),
+    #f0fdff;
+}
+
 /* 主应用外壳需要至少占满一屏，避免内容不足时侧边栏断开。 */
 .app-shell {
   min-height: 100vh;
+  background: var(--shell-bg);
+}
+
+/* 侧边栏使用深色科技底色，和内容区形成清晰后台层级。 */
+.app-shell .n-layout-sider {
+  background: var(--sider-bg);
+  border-right-color: var(--sider-border);
 }
 
 /* 左侧品牌区域，固定高度用于和顶部 Header 对齐。 */
@@ -30,6 +63,18 @@ body {
   padding: 0 20px;
   font-size: 18px;
   font-weight: 700;
+  color: var(--brand-text);
+}
+
+/* 品牌前缀用短色条承接主题主色，避免后台顶部过度装饰。 */
+.brand::before {
+  content: "";
+  width: 4px;
+  height: 18px;
+  margin-right: 10px;
+  border-radius: 999px;
+  background: var(--brand-accent);
+  box-shadow: 0 0 16px var(--brand-accent);
 }
 
 /* 顶部标题栏，后续会承载租户、应用切换和用户菜单。 */
@@ -37,12 +82,20 @@ body {
   height: 56px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 24px;
   font-weight: 600;
-  background: #fff;
+  background: var(--header-bg);
+  backdrop-filter: blur(12px);
+}
+
+/* 主题切换控件保持紧凑，不抢占后台主要操作区。 */
+.theme-select {
+  width: 112px;
 }
 
 /* 主内容区域统一留白，具体页面内部再控制栅格和表格密度。 */
 .app-content {
   padding: 20px;
+  background: var(--content-bg);
 }

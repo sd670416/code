@@ -28,6 +28,7 @@ deleted tinyint not null default 0
 
 ```text
 sys_tenant 1--n sys_user
+sys_user 1--1 sys_user_preference
 sys_tenant 1--n low_app
 sys_user n--n sys_role
 low_app 1--n app_menu
@@ -116,6 +117,33 @@ create table sys_user (
   key idx_user_dept (tenant_id, dept_id)
 ) engine=InnoDB default charset=utf8mb4 comment='用户表';
 ```
+
+### 3.4 sys_user_preference 用户偏好表
+
+```sql
+create table sys_user_preference (
+  id bigint primary key comment '偏好ID',
+  tenant_id bigint not null comment '租户ID',
+  user_id bigint not null comment '用户ID',
+  theme_scheme varchar(32) not null default 'deep-blue' comment '后台主题方案：deep-blue深海蓝 cyber-cyan赛博青',
+  layout_density varchar(32) not null default 'default' comment '布局密度：default默认 compact紧凑',
+  language varchar(32) not null default 'zh-CN' comment '界面语言',
+  extra_json json null comment '扩展偏好配置',
+  created_by bigint null,
+  created_at datetime not null default current_timestamp,
+  updated_by bigint null,
+  updated_at datetime not null default current_timestamp on update current_timestamp,
+  deleted tinyint not null default 0,
+  unique key uk_user_preference_user (tenant_id, user_id)
+) engine=InnoDB default charset=utf8mb4 comment='用户偏好表';
+```
+
+说明：
+
+- 主题方案属于用户个人偏好，不写死在前端。
+- 登录后主平台返回用户偏好，前端按 `theme_scheme` 应用主题。
+- 用户切换主题后调用偏好保存接口，后端更新 `sys_user_preference`。
+- 前端本地存储只作为未登录或接口失败时的临时缓存。
 
 ## 4. 应用与菜单
 
